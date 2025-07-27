@@ -175,3 +175,77 @@ for T in types
     dim = 64
     type_group[key] = @benchmarkable random_unitary($T, $dim)
 end
+
+
+# ---- random_povm ---- # 
+
+SUITE["TestRandomPOVMBenchmarks"] = BenchmarkGroup()
+SUITE["TestRandomPOVMBenchmarks"]["test_bench__random_povm__vary__dim"] = BenchmarkGroup()
+SUITE["TestRandomPOVMBenchmarks"]["test_bench__random_povm__vary__num_inputs"] = BenchmarkGroup()
+SUITE["TestRandomPOVMBenchmarks"]["test_bench__random_povm__vary__num_outputs"] = BenchmarkGroup()
+SUITE["TestRandomPOVMBenchmarks"]["test_bench__random_povm__vary__dim_num_inputs_num_outputs"] = BenchmarkGroup()
+
+"""Benchmark `random_povm` with varying POVM dimensions."""
+dim_group = SUITE["TestRandomPOVMBenchmarks"]["test_bench__random_povm__vary__dim"]
+for dim in [4, 16, 64, 256]
+    num_inputs = 4
+    num_outputs = 4
+
+    key = "test_bench__random_povm__vary__dim[$dim]"
+    dim_group[key] = @benchmarkable begin
+        povms = [random_povm($dim, $num_outputs, $dim) for _ in 1:$num_inputs]
+        povm_array = Array{ComplexF64, 4}(undef, $dim, $dim, $num_inputs, $num_outputs)
+        for i in 1:$num_inputs, j in 1:$num_outputs
+            povm_array[:, :, i, j] = povms[i][j].data
+        end
+        @assert size(povm_array) == ($dim, $dim, $num_inputs, $num_outputs)
+    end
+end
+
+"""Benchmark `random_povm` with varying number of measurement inputs."""
+input_group = SUITE["TestRandomPOVMBenchmarks"]["test_bench__random_povm__vary__num_inputs"]
+for num_inputs in [4, 16, 64, 256]
+    dim = 4
+    num_outputs = 4
+    key = "test_bench__random_povm__vary__num_inputs[$num_inputs]"
+    input_group[key] = @benchmarkable begin
+        povms = [random_povm($dim, $num_outputs, $dim) for _ in 1:$num_inputs]
+        povm_array = Array{ComplexF64, 4}(undef, $dim, $dim, $num_inputs, $num_outputs)
+        for i in 1:$num_inputs, j in 1:$num_outputs
+            povm_array[:, :, i, j] = povms[i][j].data
+        end
+        @assert size(povm_array) == ($dim, $dim, $num_inputs, $num_outputs)
+    end
+end
+
+"""Benchmark `random_povm` with varying number of measurement outputs."""
+outputs_group = SUITE["TestRandomPOVMBenchmarks"]["test_bench__random_povm__vary__num_outputs"]
+for num_outputs in [4, 16, 64, 256]
+    dim = 4
+    num_inputs = 4
+    key = "test_bench__random_povm__vary__num_outputs[$num_outputs]"
+    outputs_group[key] = @benchmarkable begin
+        povms = [random_povm($dim, $num_outputs, $dim) for _ in 1:$num_inputs]
+        povm_array = Array{ComplexF64, 4}(undef, $dim, $dim, $num_inputs, $num_outputs)
+        for i in 1:$num_inputs, j in 1:$num_outputs
+            povm_array[:, :, i, j] = povms[i][j].data
+        end
+        @assert size(povm_array) == ($dim, $dim, $num_inputs, $num_outputs)
+    end
+end
+
+"""Benchmark `random_povm` with varying combinations of dimensions, inputs, and outputs."""
+combo_group = SUITE["TestRandomPOVMBenchmarks"]["test_bench__random_povm__vary__dim_num_inputs_num_outputs"]
+for (dim, num_inputs, num_outputs) in [
+        (4, 4, 4), (4, 8, 8), (8, 4, 8), (8, 8, 4), (8, 8, 8), (16, 16, 16)
+    ]
+    key = "test_bench__random_povm__vary__dim_num_inputs_num_outputs[$dim,$num_inputs,$num_outputs]"
+    combo_group[key] = @benchmarkable begin
+        povms = [random_povm($dim, $num_outputs, $dim) for _ in 1:$num_inputs]
+        povm_array = Array{ComplexF64, 4}(undef, $dim, $dim, $num_inputs, $num_outputs)
+        for i in 1:$num_inputs, j in 1:$num_outputs
+            povm_array[:, :, i, j] = povms[i][j].data
+        end
+        @assert size(povm_array) == ($dim, $dim, $num_inputs, $num_outputs)
+    end
+end

@@ -170,7 +170,7 @@ type_group = SUITE["TestRandomUnitaryBenchmarks"]["test_bench__random_unitary__v
 types = [Float64, ComplexF64]
 
 for T in types
-    label = !(T <: Complex) ? "True" : "False" 
+    label = !(T <: Complex) ? "True" : "False"
     key = "test_bench__random_unitary__vary__is_real[$label]"
     dim = 64
     type_group[key] = @benchmarkable random_unitary($T, $dim)
@@ -293,5 +293,46 @@ for dim in dims
         rho = input_mat/ tr(input_mat)
         h = entropy(rho)
         @assert isa(h, Number) && h >= 0
+    end
+end
+
+# ----channel_amplitude_damping_generalized---- #
+SUITE["TestAmplitudeDampingBenchmarks"] = BenchmarkGroup()
+SUITE["TestAmplitudeDampingBenchmarks"]["test_bench__amplitude_damping__vary__input_mat_gamma_prob"] = BenchmarkGroup()
+
+"""Benchmark `amplitude_damping` with varying input matrix presence, damping rate, and probability."""
+bench_group = SUITE["TestAmplitudeDampingBenchmarks"]["test_bench__amplitude_damping__vary__input_mat_gamma_prob"]
+
+configs = [
+    ("False", 0.0, 0.0),
+    ("False", 0.1, 0.5),
+    ("False", 0.5, 0.5),
+    ("False", 0.7, 0.2),
+    ("False", 0.1, 1.0),
+    ("False", 0.7, 1.0),
+    ("False", 1.0, 1.0),
+    ("True", 0.0, 0.0),
+    ("True", 0.1, 0.5),
+    ("True", 0.5, 0.5),
+    ("True", 0.7, 0.0),
+    ("True", 1.0, 1.0)
+]
+
+for (input_mat, gamma, prob) in configs
+    key = "test_bench__amplitude_damping__vary__input_mat_gamma_prob[$input_mat-$gamma-$prob]"
+    if input_mat == "True"
+        mat = randn(2, 2) + im * randn(2, 2)
+        rho = mat * adjoint(mat)
+        rho = rho / tr(rho)
+        bench_group[key] = @benchmarkable begin
+            kraus_ops = channel_amplitude_damping_generalized($prob, $gamma)
+            result = sum(K * $rho * K' for K in kraus_ops)
+            @assert isapprox(tr(result), 1.0; atol=1e-10)
+        end
+    else
+        bench_group[key] = @benchmarkable begin
+            kraus_ops = channel_amplitude_damping_generalized($prob, $gamma)
+            @assert length(kraus_ops) == 4
+        end
     end
 end

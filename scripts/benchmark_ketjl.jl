@@ -275,3 +275,23 @@ for (dim, is_square) in dim_cases
         end
     end
 end
+
+# ---- entropy ---- # 
+SUITE["TestVonNeumannEntropyBenchmarks"] = BenchmarkGroup()
+SUITE["TestVonNeumannEntropyBenchmarks"]["test_bench__von_neumann_entropy__vary__rho"] = BenchmarkGroup()
+
+"""Benchmark `von_neumann_entropy` by varying the dimension of the density matrix."""
+rho_group = SUITE["TestVonNeumannEntropyBenchmarks"]["test_bench__von_neumann_entropy__vary__rho"]
+dims = [4, 16, 32, 64, 128, 256]
+
+for dim in dims
+    key = "test_bench__von_neumann_entropy__vary__rho[$dim]"
+
+    rho_group[key] = @benchmarkable begin
+        input_mat = randn(ComplexF64, $dim, $dim)
+        input_mat = input_mat * adjoint(input_mat)
+        rho = input_mat/ tr(input_mat)
+        h = entropy(rho)
+        @assert isa(h, Number) && h >= 0
+    end
+end

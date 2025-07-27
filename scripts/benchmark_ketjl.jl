@@ -239,7 +239,7 @@ combo_group = SUITE["TestRandomPOVMBenchmarks"]["test_bench__random_povm__vary__
 for (dim, num_inputs, num_outputs) in [
         (4, 4, 4), (4, 8, 8), (8, 4, 8), (8, 8, 4), (8, 8, 8), (16, 16, 16)
     ]
-    key = "test_bench__random_povm__vary__dim_num_inputs_num_outputs[$dim,$num_inputs,$num_outputs]"
+    key = "test_bench__random_povm__vary__dim_num_inputs_num_outputs[$dim-$num_inputs-$num_outputs]"
     combo_group[key] = @benchmarkable begin
         povms = [random_povm($dim, $num_outputs, $dim) for _ in 1:$num_inputs]
         povm_array = Array{ComplexF64, 4}(undef, $dim, $dim, $num_inputs, $num_outputs)
@@ -247,5 +247,31 @@ for (dim, num_inputs, num_outputs) in [
             povm_array[:, :, i, j] = povms[i][j].data
         end
         @assert size(povm_array) == ($dim, $dim, $num_inputs, $num_outputs)
+    end
+end
+
+
+# ---- trace_norm ---- # 
+SUITE["TestTraceNormBenchmarks"] = BenchmarkGroup()
+SUITE["TestTraceNormBenchmarks"]["test_bench__random_povm__vary__dim"] = BenchmarkGroup()
+
+"""Benchmark `trace_norm` with varying matrix dimensions and square/non-square shapes."""
+dim_group = SUITE["TestTraceNormBenchmarks"]["test_bench__trace_norm__vary__rho"]
+dim_cases = [(4, "square"),(16, "square"),(64, "square"),(128, "square"),(25, "not_square"),(100, "not_square")]
+
+for (dim, is_square) in dim_cases
+    key = "test_bench__trace_norm__vary__rho[$dim-$is_square]"
+    if is_square == "square"
+        dim_group[key] = @benchmarkable begin
+            rho = randn(ComplexF64, $dim, $dim)
+            val = trace_norm(rho)
+            @assert !isnothing(val)
+        end
+    else
+        dim_group[key] = @benchmarkable begin
+            rho = randn(ComplexF64, $dim, 2*$dim)
+            val = trace_norm(rho)
+            @assert !isnothing(val)
+        end
     end
 end

@@ -336,3 +336,46 @@ for (input_mat, gamma, prob) in configs
         end
     end
 end
+
+
+# ---- channel_bit_flip ---- # 
+
+SUITE["TestBitflipBenchmarks"] = BenchmarkGroup()
+SUITE["TestBitflipBenchmarks"]["test_bench__bitflip__vary__input_mat_prob"] = BenchmarkGroup()
+
+"""Benchmark `channel_bit_flip` with varying input matrix presence and bitflip probability."""
+prob_group = SUITE["TestBitflipBenchmarks"]["test_bench__bitflip__vary__input_mat_prob"]
+
+cases = [
+    (false, 0.0),
+    (false, 0.2),
+    (false, 0.8),
+    (false, 1.0),
+    (true,  0.0),
+    (true,  0.2),
+    (true,  0.8),
+    (true,  1.0),
+]
+
+for (input_mat, prob) in cases
+    key = "test_bench__bitflip__vary__input_mat_prob[$input_mat-$prob]"
+
+    if input_mat
+        prob_group[key] = @benchmarkable begin
+            A = randn(ComplexF64, 2, 2)
+            rho = A * adjoint(A)
+            rho = rho / tr(rho)
+            kraus_ops = channel_bit_flip(1 - $prob)
+            out = zero(rho)
+            for K in kraus_ops
+                out += K * rho * adjoint(K)
+            end
+            @assert isapprox(tr(out), 1.0; atol=1e-10)
+        end
+    else
+        prob_group[key] = @benchmarkable begin
+            kraus_ops = channel_bit_flip(1 - $prob)
+            @assert length(kraus_ops) == 2
+        end
+    end
+end

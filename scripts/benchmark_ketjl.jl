@@ -379,3 +379,69 @@ for (input_mat, prob) in cases
         end
     end
 end
+
+
+# ---- ket ---- # 
+
+SUITE["TestBasisBenchmarks"] = BenchmarkGroup()
+SUITE["TestBasisBenchmarks"]["test_bench__basis__vary__dim"] = BenchmarkGroup()
+
+dim_group = SUITE["TestBasisBenchmarks"]["test_bench__basis__vary__dim"]
+
+for dim in [4, 16, 64, 256]
+    key = "test_bench__basis__vary__dim[$dim]"
+    dim_group[key] = @benchmarkable begin
+        v = ket(Float64, 3, $dim)
+        @assert length(v) == $dim
+    end
+end
+
+
+# ---- permute_systems---- #
+
+SUITE["TestPermuteSystemBenchmarks"] = BenchmarkGroup()
+SUITE["TestPermuteSystemBenchmarks"]["test_bench__permute_systems__vary__dim_perm"] = BenchmarkGroup()
+SUITE["TestPermuteSystemBenchmarks"]["test_bench__permute_systems__vary__vector_input"] = BenchmarkGroup()
+
+
+
+dim_perm_group = SUITE["TestPermuteSystemBenchmarks"]["test_bench__permute_systems__vary__dim_perm"]
+dim_perm_cases = [
+    ([2, 2], [1, 0]),
+    ([4, 4], [1, 0]),
+    ([8, 8], [1, 0]),
+    ([2, 2, 2], [1, 2, 0]),
+    ([4, 4, 4], [2, 0, 1]),
+    ([2, 2, 2, 2], [3, 2, 1, 0]),
+    ([4, 4, 4, 4], [3, 0, 2, 1]),
+]
+
+for (dims, perm) in dim_perm_cases
+    size = prod(dims)
+    perm_jl = [p+1 for p in perm]
+    key = "test_bench__permute_systems__vary__dim_perm[$dims-$perm]"
+    dim_perm_group[key] = @benchmarkable begin
+        mat = randn(ComplexF64, $size, $size)
+        result = permute_systems(mat, $perm_jl, $dims)
+    end
+end
+    
+vec_group = SUITE["TestPermuteSystemBenchmarks"]["test_bench__permute_systems__vary__vector_input"]
+
+vec_cases = [
+    (4, [2, 2], [1, 0]),
+    (8, [2, 2, 2], [1, 2, 0]),
+    (16, [4, 4], [1, 0]),
+    (64, [4, 4, 4], [2, 1, 0]),
+    (256, [16, 16], [1, 0]),
+]
+
+for (size, dims, perm) in vec_cases
+    perm_jl = [ p+1 for p in perm]
+    key = "test_bench__permute_systems__vary__vector_input[$size-$dims-$perm]"
+    vec_group[key] = @benchmarkable begin
+        vec = randn(ComplexF64, $size)
+        result = permute_systems(vec, $perm_jl, $dims)
+        @assert length(result) == $size
+    end
+end

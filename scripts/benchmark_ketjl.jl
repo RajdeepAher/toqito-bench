@@ -512,3 +512,60 @@ for n in (2, 4, 8)
 end
 
 # ---- permutation_matrix---- #
+
+SUITE["TestPermutationOperatorBenchmarks"] = BenchmarkGroup()
+
+dim_perm_group = SUITE["TestPermutationOperatorBenchmarks"]["test_bench__permutation_operator__vary__dim_perm"] = BenchmarkGroup()
+
+cases = [
+    (2, [1, 0]),
+    (2, [1, 2, 0]),
+    (2, [1, 2, 0, 3]),
+    (2, [1, 2, 0, 3, 4]),
+    (2, [1, 2, 5, 0, 3, 4]),
+    (16, [1, 0]),
+    (16, [1, 2, 0]),
+    (8, [1, 2, 0, 3]),
+]
+
+for (dim, perm) in cases
+    perm_jl = [p+1 for p in perm]
+    local key = "test_bench__permutation_matrix__vary__dim_perm[$dim-$perm]"
+    dim_perm_group[key] = @benchmarkable begin
+        p = permutation_matrix(ComplexF64, $dim, $perm_jl)
+        @assert size(p) == ($dim^(length($perm_jl)), $dim^(length($perm_jl)))
+    end
+end
+
+
+# ---- apply_map ---- #
+
+# SUITE["TestApplyChannelBenchmarks"] = BenchmarkGroup()
+# SUITE["TestApplyChannelBenchmarks"]["test_bench__apply_channel__vary__phi_op"] = BenchmarkGroup()
+
+# phi_op_group = SUITE["TestApplyChannelBenchmarks"]["test_bench__apply_channel__vary__phi_op"]
+# cases = [
+#     ("kraus", 4),
+#     ("kraus", 16),
+#     ("kraus", 64),
+#     ("kraus", 256),
+#     # ("choi", 2),
+#     # ("choi", 4),
+#     # ("choi", 16),
+#     # ("choi", 64),
+#     # ("choi", (4, 16)),
+#     # ("choi", (32, 64)),
+# ]
+
+# for (phi_op_type, dim) in cases
+#     key = "test_bench__applymap__vary__phi_op[$phi_op_type-$(dim)]"
+#     if phi_op_type == "kraus"
+#         d = dim
+#         input_mat = randn(ComplexF64, d, d)
+#         K = [randn(ComplexF64, d, d) for _ in 1:4]
+#         phi_op_group[key] = @benchmarkable begin
+#             result = applymap(K, $input_mat)
+#             @assert size(result) == ($d, $d)
+#         end
+#     end
+# end

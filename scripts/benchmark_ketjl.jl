@@ -445,3 +445,45 @@ for (size, dims, perm) in vec_cases
         @assert length(result) == $size
     end
 end
+
+# ---- choi---- #
+
+SUITE["TestKraustoChoiBenchmarks"] = BenchmarkGroup()
+SUITE["TestKraustoChoiBenchmarks"]["test_bench__choi_representation__vary__kraus_ops"] = BenchmarkGroup()
+SUITE["TestKraustoChoiBenchmarks"]["test_bench__choi_representation__param__sys"] = BenchmarkGroup()
+
+choi_group = SUITE["TestKraustoChoiBenchmarks"]["test_bench__choi_representation__vary__kraus_ops"]
+
+# (dim, num_ops, cp)
+cases = [
+    (2, 4, true),
+    (2, 32, true),
+    (4, 4, true),
+    (4, 32, true),
+    (16, 4, true),
+    (16, 32, true),
+    # non-CP cases are NOT supported in ketjl.
+]
+
+for (dim, num_ops, cp) in cases
+    key = "test_bench__choi_representation__vary__kraus_ops[$dim-$num_ops-True]"
+    if cp
+        choi_group[key] = @benchmarkable begin
+            K = [randn(ComplexF64, $dim, $dim) for _ in 1:$num_ops]
+            C = choi(K)
+            @assert size(C) == ($dim^2, $dim^2)
+        end
+    end
+end
+
+sys_group = SUITE["TestKraustoChoiBenchmarks"]["test_bench__choi_representation__param__sys"]
+
+# Only sys==2 is supported,
+key = "test_bench__choi_representation__param__sys[2]"
+sys_group[key] = @benchmarkable begin
+    dim = 16
+    num_ops = 4
+    K = [randn(ComplexF64, dim, dim) for _ in 1:num_ops]
+    C = choi(K)
+    @assert size(C) == (dim^2, dim^2)
+end

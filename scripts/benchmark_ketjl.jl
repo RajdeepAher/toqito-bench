@@ -487,3 +487,28 @@ sys_group[key] = @benchmarkable begin
     C = choi(K)
     @assert size(C) == (dim^2, dim^2)
 end
+
+# ---- pauli ---- #
+SUITE["TestPauliBenchmarks"] = BenchmarkGroup()
+SUITE["TestPauliBenchmarks"]["test_bench__pauli__vary__ind"] = BenchmarkGroup()
+
+pauli_group = SUITE["TestPauliBenchmarks"]["test_bench__pauli__vary__ind"]
+
+for j in 0:3
+    key1 = "test_bench__pauli__vary__ind[int-$j]"
+    pauli_group[key1] = @benchmarkable begin
+        M = pauli($j)
+        @assert size(M) == (2,2)
+    end
+end
+
+for n in (2, 4, 8)
+    key2 = "test_bench__pauli__vary__ind[list-$n]"
+    inds = rand(0:3, n)
+    pauli_group[key2] = @benchmarkable begin
+        M = pauli($inds)
+        @assert size(M) == (2^$n, 2^$n)
+    end
+end
+
+# ---- permutation_matrix---- #

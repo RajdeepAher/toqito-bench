@@ -151,7 +151,7 @@ for (sys, id) in zip(sys_list, ids)
 end
 
 
-# ---- random_density_matrix ---- # 
+# ---- random_unitary ---- # 
 SUITE["TestRandomUnitaryBenchmarks"] = BenchmarkGroup()
 SUITE["TestRandomUnitaryBenchmarks"]["test_bench__random_unitary__vary__dim"] = BenchmarkGroup()
 SUITE["TestRandomUnitaryBenchmarks"]["test_bench__random_unitary__vary__is_real"] = BenchmarkGroup()
@@ -178,7 +178,6 @@ end
 
 
 # ---- random_povm ---- # 
-
 SUITE["TestRandomPOVMBenchmarks"] = BenchmarkGroup()
 SUITE["TestRandomPOVMBenchmarks"]["test_bench__random_povm__vary__dim"] = BenchmarkGroup()
 SUITE["TestRandomPOVMBenchmarks"]["test_bench__random_povm__vary__num_inputs"] = BenchmarkGroup()
@@ -187,11 +186,12 @@ SUITE["TestRandomPOVMBenchmarks"]["test_bench__random_povm__vary__dim_num_inputs
 
 """Benchmark `random_povm` with varying POVM dimensions."""
 dim_group = SUITE["TestRandomPOVMBenchmarks"]["test_bench__random_povm__vary__dim"]
+
+
 for dim in [4, 16, 64, 256]
+    key = "test_bench__random_povm__vary__dim[$dim]"
     num_inputs = 4
     num_outputs = 4
-
-    key = "test_bench__random_povm__vary__dim[$dim]"
     dim_group[key] = @benchmarkable begin
         povms = [random_povm($dim, $num_outputs, $dim) for _ in 1:$num_inputs]
         povm_array = Array{ComplexF64, 4}(undef, $dim, $dim, $num_inputs, $num_outputs)
@@ -290,7 +290,7 @@ for dim in dims
     rho_group[key] = @benchmarkable begin
         input_mat = randn(ComplexF64, $dim, $dim)
         input_mat = input_mat * adjoint(input_mat)
-        rho = input_mat/ tr(input_mat)
+        rho = input_mat / tr(input_mat)
         h = entropy(rho)
         @assert isa(h, Number) && h >= 0
     end
@@ -304,6 +304,7 @@ SUITE["TestAmplitudeDampingBenchmarks"]["test_bench__amplitude_damping__vary__in
 bench_group = SUITE["TestAmplitudeDampingBenchmarks"]["test_bench__amplitude_damping__vary__input_mat_gamma_prob"]
 
 configs = [
+    # input_mat present, gamma, prob
     ("False", 0.0, 0.0),
     ("False", 0.1, 0.5),
     ("False", 0.5, 0.5),
@@ -339,7 +340,6 @@ end
 
 
 # ---- channel_bit_flip ---- # 
-
 SUITE["TestBitflipBenchmarks"] = BenchmarkGroup()
 SUITE["TestBitflipBenchmarks"]["test_bench__bitflip__vary__input_mat_prob"] = BenchmarkGroup()
 
@@ -382,7 +382,6 @@ end
 
 
 # ---- ket ---- # 
-
 SUITE["TestBasisBenchmarks"] = BenchmarkGroup()
 SUITE["TestBasisBenchmarks"]["test_bench__basis__vary__dim"] = BenchmarkGroup()
 
@@ -398,12 +397,9 @@ end
 
 
 # ---- permute_systems---- #
-
 SUITE["TestPermuteSystemBenchmarks"] = BenchmarkGroup()
 SUITE["TestPermuteSystemBenchmarks"]["test_bench__permute_systems__vary__dim_perm"] = BenchmarkGroup()
 SUITE["TestPermuteSystemBenchmarks"]["test_bench__permute_systems__vary__vector_input"] = BenchmarkGroup()
-
-
 
 dim_perm_group = SUITE["TestPermuteSystemBenchmarks"]["test_bench__permute_systems__vary__dim_perm"]
 dim_perm_cases = [
@@ -437,7 +433,7 @@ vec_cases = [
 ]
 
 for (size, dims, perm) in vec_cases
-    perm_jl = [ p+1 for p in perm]
+    perm_jl = [p+1 for p in perm]
     key = "test_bench__permute_systems__vary__vector_input[$size-$dims-$perm]"
     vec_group[key] = @benchmarkable begin
         vec = randn(ComplexF64, $size)
@@ -447,7 +443,6 @@ for (size, dims, perm) in vec_cases
 end
 
 # ---- choi---- #
-
 SUITE["TestKraustoChoiBenchmarks"] = BenchmarkGroup()
 SUITE["TestKraustoChoiBenchmarks"]["test_bench__choi_representation__vary__kraus_ops"] = BenchmarkGroup()
 SUITE["TestKraustoChoiBenchmarks"]["test_bench__choi_representation__param__sys"] = BenchmarkGroup()
@@ -512,20 +507,29 @@ for n in (2, 4, 8)
 end
 
 # ---- permutation_matrix---- #
-
 SUITE["TestPermutationOperatorBenchmarks"] = BenchmarkGroup()
 
 dim_perm_group = SUITE["TestPermutationOperatorBenchmarks"]["test_bench__permutation_operator__vary__dim_perm"] = BenchmarkGroup()
 
 cases = [
-    (2, [1, 0]),
-    (2, [1, 2, 0]),
-    (2, [1, 2, 0, 3]),
-    (2, [1, 2, 0, 3, 4]),
-    (2, [1, 2, 5, 0, 3, 4]),
-    (16, [1, 0]),
-    (16, [1, 2, 0]),
-    (8, [1, 2, 0, 3]),
+    # 2 subsystems
+    (2, [1, 0]),  # 4x4 matrix (swap)
+    (16, [1, 0]), # 256x256 matrix (swap)
+
+    # 3 subsystems
+    (2, [1, 2, 0]), # 8x8 matrix (cycle)
+
+    # 4 subsystems
+    (2, [1, 2, 0, 3]), # 16x16 matrix
+
+    # 5 subsystems
+    (2, [1, 2, 0, 3, 4]), # 32x32 matrix
+
+    # 6 subsystems
+    (2, [1, 2, 5, 0, 3, 4]), # 64x64 matrix (complex shuffle)
+    
+    # (16, [1, 2, 0]),
+    # (8, [1, 2, 0, 3]),
 ]
 
 for (dim, perm) in cases

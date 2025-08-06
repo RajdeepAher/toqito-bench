@@ -1027,7 +1027,7 @@ class TestBitflipBenchmarks:
         else:
             # When no input matrix is provided, the function should return 2 Kraus operators.
             result = benchmark(bitflip, input_mat = None, prob = prob)
-            assert len(result) == 4
+            assert len(result) == 2
 
 class TestDephasingBenchmarks:
     """Benchmarks for `toqito.channels.dephasing` function."""

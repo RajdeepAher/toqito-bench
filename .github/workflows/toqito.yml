@@ -9,7 +9,7 @@ on:
       - 'scripts/benchmark_toqito.py'
 
 jobs:
-    benchmark-qutipy:
+    benchmark-toqito:
         runs-on: ubuntu-latest
 
         steps:

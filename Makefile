@@ -242,6 +242,11 @@ test-qutipy-setup: ensure-qutipy
 	@echo "QuTIpy setup test completed!"
 
 
+qutipy-info: ensure-toqito
+	@echo "QuTIpy environment information:"
+	@cd $(QUTIPY_ENV_DIR) && poetry show
+	@cd $(QUTIPY_ENV_DIR) && poetry env info
+
 BENCHMARK_FILE_QUTIPY := benchmark_qutipy.py
 
 benchmark-full-qutipy: ensure-qutipy

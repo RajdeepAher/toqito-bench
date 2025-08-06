@@ -108,7 +108,7 @@ benchmark-full-toqito: ensure-toqito
 		--benchmark-sort=name \
 		--benchmark-columns=min,max,mean,stddev,median,iqr,outliers,ops,rounds \
 		--benchmark-save=detailed_$(shell date +%Y_%m_%d__%H_%M_%S) \
-		--benchmark-storage=$(shell pwd)/$(BENCHMARK_STORAGE)/qutipy/full \
+		--benchmark-storage=$(shell pwd)/$(BENCHMARK_STORAGE)/toqito/full \
 		--benchmark-verbose \
 		-v --tb=long
 	@echo "Detailed benchmarks for toqito completed !"

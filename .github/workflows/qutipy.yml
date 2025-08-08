@@ -1,0 +1,43 @@
+name: Benchmark QuTIpy
+
+on:
+  push:
+    paths:
+      - 'scripts/benchmark_qutipy.py'
+  pull_request:
+    paths:
+      - 'scripts/benchmark_qutipy.py'
+
+jobs:
+    benchmark-qutipy:
+        runs-on: ubuntu-latest
+
+        steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
+        
+        - name: Set up Python (3.11+ for qutipy)
+          uses: actions/setup-python@v5
+          with:
+            python-version: '3.11'
+        
+        - name: Install Poetry
+          run: pip install poetry
+
+        - name: Set up QuTIpy environment
+          run: make setup-qutipy
+
+        - name: Run QuTIpy setup test
+          run: make test-qutipy-setup
+
+        - name: Display QuTIpy environment info
+          run: make qutipy-info
+
+        - name: Run QuTIpy simple benchmarks for CI
+          run: make benchmark-full-qutipy
+        
+        - name: Upload benchmark results as artifact
+          uses: actions/upload-artifact@v4
+          with:
+            name: qutipy-ci-benchmark
+            path: results/qutipy/full/**/*.json

@@ -1,0 +1,43 @@
+name: Benchmark toqito
+
+on:
+  push:
+    paths:
+      - 'scripts/benchmark_toqito.py'
+  pull_request:
+    paths:
+      - 'scripts/benchmark_toqito.py'
+
+jobs:
+    benchmark-toqito:
+        runs-on: ubuntu-latest
+
+        steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
+        
+        - name: Set up Python
+          uses: actions/setup-python@v5
+          with:
+            python-version: '3.11'
+        
+        - name: Install Poetry
+          run: pip install poetry
+
+        - name: Set up toqito environment
+          run: make setup-toqito
+
+        - name: Run toqito setup test
+          run: make test-toqito-setup
+
+        - name: Display toqito environment info
+          run: make toqito-info
+
+        - name: Run toqito simple benchmarks for CI
+          run: make benchmark-full-toqito
+        
+        - name: Upload benchmark results as artifact
+          uses: actions/upload-artifact@v4
+          with:
+            name: toqito-ci-benchmark
+            path: results/toqito/full/**/*.json

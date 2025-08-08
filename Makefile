@@ -108,7 +108,7 @@ benchmark-full-toqito: ensure-toqito
 		--benchmark-sort=name \
 		--benchmark-columns=min,max,mean,stddev,median,iqr,outliers,ops,rounds \
 		--benchmark-save=detailed_$(shell date +%Y_%m_%d__%H_%M_%S) \
-		--benchmark-storage=$(shell pwd)/$(BENCHMARK_STORAGE)/qutipy/full \
+		--benchmark-storage=$(shell pwd)/$(BENCHMARK_STORAGE)/toqito/full \
 		--benchmark-verbose \
 		-v --tb=long
 	@echo "Detailed benchmarks for toqito completed !"
@@ -241,6 +241,11 @@ test-qutipy-setup: ensure-qutipy
 	@cd $(QUTIPY_ENV_DIR) && poetry run python ../../setup/test_qutipy.py
 	@echo "QuTIpy setup test completed!"
 
+
+qutipy-info: ensure-toqito
+	@echo "QuTIpy environment information:"
+	@cd $(QUTIPY_ENV_DIR) && poetry show
+	@cd $(QUTIPY_ENV_DIR) && poetry env info
 
 BENCHMARK_FILE_QUTIPY := benchmark_qutipy.py
 

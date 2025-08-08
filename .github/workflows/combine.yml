@@ -3,8 +3,6 @@ name: Combine Benchmark Results
 on:
   workflow_run:
     workflows: 
-      - Benchmark ketjl
-      - Benchmark QuTIpy
       - Benchmark toqito
     types:
       - completed

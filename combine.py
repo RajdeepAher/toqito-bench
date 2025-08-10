@@ -60,7 +60,6 @@ def combine(ketjl, toqito, qutipy):
     table = []
 
     for name in sorted(keys):
-        print("processing key: ", name)
         row = {'name': name}
 
         row['ketjl_mean_s'] = ketjl.get(name, {}).get('mean')

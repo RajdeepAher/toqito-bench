@@ -30,7 +30,22 @@ jobs:
           path: results/qutipy/full/
 
       # Download artefacts from toqito
-      - name: Download toqito benchmark artefact
+      # Download artifacts from Ket.jl
+      - name: Download Ketjl benchmark artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ketjl-ci-benchmark
+          path: results/ketjl/full/
+
+      # Download artifacts from QuTIpy
+      - name: Download QuTIpy benchmark artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: qutipy-ci-benchmark
+          path: results/qutipy/full/
+
+      # Download artifacts from toqito
+      - name: Download toqito benchmark artifact
         uses: actions/download-artifact@v4
         with:
           name: toqito-ci-benchmark
@@ -46,7 +61,7 @@ jobs:
       - name: Combine results
         run: python combine.py
 
-      # Upload the combined CSV as a downloadable artefact
+      # Upload the combined CSV as a downloadable artifact
       - name: Upload combined benchmark results
         uses: actions/upload-artifact@v4
         with:

@@ -12,7 +12,10 @@ def load_ketjl():
             name = entry['name']
             results[name] = {
                 'mean': entry.get('mean_ns', 0)/ 1e9 if entry.get('mean_ns') is not None else None,
-                'median': entry.get('median_ns', 0)/1e9 if entry.get('median_ns') is not None else None,
+                'mean': entry.get('mean_ns') / 1e9 if entry.get('mean_ns') is not None else None,
+                'median': entry.get('median_ns') / 1e9 if entry.get('median_ns') is not None else None,
+                'mean': entry.get('mean_ns', 0)/ 1e9 if entry.get('mean_ns') is not None else None,
+                'median': entry.get('median_ns') / 1e9 if entry.get('median_ns') is not None else None,
                 'ops':entry.get('ops'),
                 'source': 'ketjl',
             }

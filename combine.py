@@ -66,18 +66,19 @@ def combine(ketjl, toqito, qutipy):
     for name in sorted(keys):
         row = {'name': name}
 
-        row['ketjl_mean_s'] = ketjl.get(name, {}).get('mean')
-        row['ketjl_median_s'] = ketjl.get(name, {}).get('median')
-        row['ketjl_ops'] = ketjl.get(name, {}).get('ops')
+        row["ketjl_mean_s"] = ketjl.get(name, {}).get("mean")
+        row["ketjl_median_s"] = ketjl.get(name, {}).get("median")
+        row["ketjl_ops"] = ketjl.get(name, {}).get("ops")
 
-        row['toqito_mean_s'] = toqito.get(name, {}).get('mean')
-        row['toqito_median_s'] = toqito.get(name, {}).get('median')
-        row['toqito_ops'] = toqito.get(name, {}).get('ops')
+        row["toqito_mean_s"] = toqito.get(name, {}).get("mean")
+        row["toqito_median_s"] = toqito.get(name, {}).get("median")
+        row["toqito_ops"] = toqito.get(name, {}).get("ops")
 
-        row['qutipy_mean_s'] = qutipy.get(name, {}).get('mean')
-        row['qutipy_median_s'] = qutipy.get(name, {}).get('median')
-        row['qutipy_ops'] = qutipy.get(name, {}).get('ops')
+        row["qutipy_mean_s"] = qutipy.get(name, {}).get("mean")
+        row["qutipy_median_s"] = qutipy.get(name, {}).get("median")
+        row["qutipy_ops"] = qutipy.get(name, {}).get("ops")
         table.append(row)
+
     return table
 
 def main():

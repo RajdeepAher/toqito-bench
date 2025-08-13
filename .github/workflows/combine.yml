@@ -29,7 +29,6 @@ jobs:
           name: qutipy-ci-benchmark
           path: results/qutipy/full/
 
-      # Download artefacts from toqito
       # Download artifacts from Ket.jl
       - name: Download Ketjl benchmark artifact
         uses: actions/download-artifact@v4

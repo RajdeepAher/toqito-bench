@@ -15,15 +15,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Download artefacts from Ket.jl
-      - name: Download Ketjl benchmark artefact
+      # Download artifacts from Ket.jl
+
+      - name: Download Ketjl benchmark artifact
+
         uses: actions/download-artifact@v4
         with:
           name: ketjl-ci-benchmark
           path: results/ketjl/full/
 
-      # Download artefacts from QuTIpy
-      - name: Download QuTIpy benchmark artefact
+      # Download artifacts from QuTIpy
+
+      - name: Download QuTIpy benchmark artifact
+
         uses: actions/download-artifact@v4
         with:
           name: qutipy-ci-benchmark

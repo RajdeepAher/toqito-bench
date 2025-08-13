@@ -4,22 +4,23 @@ import os
 import glob
 
 def load_ketjl():
-    path = find_latest_json('ketjl')
-    with open(path, 'r') as f:
+    path = find_latest_json("ketjl")
+    with open(path, "r") as f:
         data = json.load(f)
         results = {}
         for entry in data:
-            name = entry['name']
+            name = entry["name"]
             results[name] = {
-                'mean': entry.get('mean_ns', 0)/ 1e9 if entry.get('mean_ns') is not None else None,
-                'mean': entry.get('mean_ns') / 1e9 if entry.get('mean_ns') is not None else None,
-                'median': entry.get('median_ns') / 1e9 if entry.get('median_ns') is not None else None,
-                'mean': entry.get('mean_ns', 0)/ 1e9 if entry.get('mean_ns') is not None else None,
-                'median': entry.get('median_ns') / 1e9 if entry.get('median_ns') is not None else None,
-                'ops':entry.get('ops'),
-                'source': 'ketjl',
+                "mean": entry.get("mean_ns", 0)/ 1e9 if entry.get("mean_ns") is not None else None,
+                "mean": entry.get("mean_ns") / 1e9 if entry.get("mean_ns") is not None else None,
+                "median": entry.get("median_ns") / 1e9 if entry.get("median_ns") is not None else None,
+                "mean": entry.get("mean_ns", 0)/ 1e9 if entry.get("mean_ns") is not None else None,
+                "median": entry.get("median_ns") / 1e9 if entry.get("median_ns") is not None else None,
+                "ops": entry.get("ops"),
+                "source": "ketjl",
             }
         return results
+
 
 def load_other(source):
     path = find_latest_json(source)

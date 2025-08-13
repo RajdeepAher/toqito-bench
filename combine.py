@@ -24,19 +24,20 @@ def load_ketjl():
 
 def load_other(source):
     path = find_latest_json(source)
-    with open(path, 'r') as f:
+    with open(path, "r") as f:
         data = json.load(f)
         results = {}
-        for entry in data['benchmarks']:
-            name = entry['name']
-            stats = entry['stats']
+        for entry in data["benchmarks"]:
+            name = entry["name"]
+            stats = entry["stats"]
             results[name] = {
-                'mean': stats.get('mean'),
-                'median': stats.get('median'),
-                'ops': stats.get('ops'),
-                'source': source,
+                "mean": stats.get("mean"),
+                "median": stats.get("median"),
+                "ops": stats.get("ops"),
+                "source": source,
             }
         return results
+
 
 def find_latest_json(library):
     # Option 1: Look for JSON directly under results/<library>/full/
